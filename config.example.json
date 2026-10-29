@@ -1,0 +1,12 @@
+{
+  "data_dir": "/absolute/private/multimodal-data",
+  "service_key_file": "/absolute/private/multimodal-service.key",
+  "vision": {
+    "endpoint": "https://api.openai.com/v1/chat/completions",
+    "api_key_file": "/absolute/private/vision-provider.key"
+  },
+  "embedding": {
+    "endpoint": "https://YOUR-WORKSPACE.cn-beijing.maas.aliyuncs.com/api/v1/services/embeddings/text-embedding/text-embedding",
+    "api_key_file": "/absolute/private/embedding-provider.key"
+  }
+}

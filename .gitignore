@@ -1,0 +1,7 @@
+__pycache__/
+.venv/
+*.pyc
+*.sqlite3*
+*.key
+config.private.json
+data/
