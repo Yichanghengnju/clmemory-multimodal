@@ -26,7 +26,9 @@ from PIL import Image
 from fastapi import FastAPI, HTTPException, Request as WebRequest
 from starlette.concurrency import run_in_threadpool
 
-VERSION = "multimodal-caption-hybrid-v1.0.0"
+VERSION = "multimodal-caption-hybrid-v1.0.1"
+# The 1.0.1 change accepts official text-only string inputs; model payloads are unchanged.
+PROVIDER_CACHE_VERSION = "multimodal-caption-hybrid-v1.0.0"
 MIB = 1024 * 1024
 IMAGE_LIMIT = 10 * MIB
 MEDIA_LIMIT = 30 * MIB
@@ -55,7 +57,12 @@ def identifier(value, label):
     return value
 
 
+def normalize_parts(parts):
+    return [{"type": "text", "text": parts}] if isinstance(parts, str) else parts
+
+
 def parts_info(parts):
+    parts = normalize_parts(parts)
     if not isinstance(parts, list) or not parts:
         raise ValueError("Multimodal content must be a nonempty ordered ContentPart array")
     images, text, size = [], [], 0
@@ -143,7 +150,7 @@ class Providers:
 
     def call(self, user, kind, payload, validate):
         profile = self.config[kind]
-        key = digest([VERSION, user, kind, profile["endpoint"], payload])
+        key = digest([PROVIDER_CACHE_VERSION, user, kind, profile["endpoint"], payload])
         with self.slots:
             with self.store.db() as db:
                 db.execute("BEGIN IMMEDIATE")
@@ -311,7 +318,7 @@ class Memory:
                     continue
                 source = json.loads(row["source"])
                 header = canonical({"source_id": row["id"], "role": source["role"], "timestamp": source["timestamp"], "session_id": source["session_id"]})
-                selected.append({"id": row["id"], "content": [{"type": "text", "text": "[Source metadata] " + header}] + source["content"], "score": ranks[i]})
+                selected.append({"id": row["id"], "content": [{"type": "text", "text": "[Source metadata] " + header}] + normalize_parts(source["content"]), "score": ranks[i]})
                 size += row["media"]
                 if len(selected) == top:
                     break

@@ -1,6 +1,6 @@
 # clmemory-multimodal
 
-An independent, source-preserving baseline for the **AML Multimodal Memory** open-source track. Version: `multimodal-caption-hybrid-v1.0.0`.
+An independent, source-preserving baseline for the **AML Multimodal Memory** open-source track. Version: `multimodal-caption-hybrid-v1.0.1`.
 
 The service writes ordered text/image memories and retrieves original evidence. It does not generate final answers. This is an engineering baseline; no official Smoke, Full, leaderboard score, or competitive advantage is claimed.
 
@@ -12,7 +12,7 @@ The service writes ordered text/image memories and retrieves original evidence. 
 4. Rank the same user's messages with BM25 (`k1=1.2`, `b=0.75`) and dense similarity, then combine ranks with equal-weight reciprocal rank fusion (`k=60`). Zero lexical matches do not add a lexical score. Ties preserve insertion order.
 5. Return up to `top_k` original messages, each with a clearly marked source-metadata text header followed by the unchanged original parts. Generated captions are not returned. Skip complete messages that would exceed the response's 30 MiB decoded-image budget. No final answer, model reranker, benchmark-specific rule, or learned filter is used.
 
-Pure image queries use the same captioning path. Text-only queries are still `ContentPart[]`. Top-level multiple-choice `options` are accepted and validated but not added to the retrieval query. There is no gold-answer input.
+Pure image queries use the same captioning path. Text-only Add/query strings are also accepted, as permitted by the full documentation; a returned source string is wrapped in a text part without rewriting it. Top-level multiple-choice `options` are accepted and validated but not added to the retrieval query. There is no gold-answer input. Version 1.0.1 adds this input compatibility; provider prompts, embeddings, ranking, and caches remain compatible with 1.0.0.
 
 ## Attribution and scope
 
@@ -24,6 +24,7 @@ Contracts checked on 2026-10-29:
 
 - [AML API Guide](https://agentmemoryleaderboard.ai/api-guide)
 - [AML participation requirements](https://agentmemoryleaderboard.ai/rules)
+- [AML full documentation](https://agentmemoryleaderboard.ai/docs)
 - [OpenAI image input documentation](https://developers.openai.com/api/docs/guides/images-vision?api-mode=chat)
 
 ## Run
@@ -85,7 +86,7 @@ Add echoes `success`, `request_id`, `user_id`, and `session_id`. Search returns 
 
 ## Validation and limitations
 
-The included 15 offline tests cover authentication, image format checks, exact evidence preservation, stable reload, cross-user isolation, idempotence, conflicting writes, 16 concurrent duplicate Adds, atomic failure, top-k, media budgets, retention, and uncertain-call suppression.
+The included 16 offline tests cover authentication, image format checks, exact evidence preservation, official text-only string compatibility, stable reload, cross-user isolation, idempotence, conflicting writes, 16 concurrent duplicate Adds, atomic failure, top-k, media budgets, retention, and uncertain-call suppression.
 
 Eleven finite synthetic live checks passed using actual GPT-4o-mini and v4 calls: text-to-image retrieval, pure-image retrieval, mixed queries, original evidence preservation, authenticated Add/Search, isolation, idempotence, and related protocol checks. The live fixture used two simple colored shapes with visible text. This does not establish accuracy on natural images, charts, fine-grained objects, long histories, or official benchmarks. Captions can omit or hallucinate visual details; text embeddings do not constitute a learned joint image-text embedding model. The baseline has no semantic correction/deletion policy or comprehensive safety filter.
 

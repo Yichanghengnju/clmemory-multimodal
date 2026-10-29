@@ -145,7 +145,13 @@ class ContractTests(unittest.TestCase):
             self.assertEqual(self.post("/search", self.query(top=top)).status_code, 422)
         self.assertEqual(self.post("/search", dict(self.query(), options=["A red", "B blue"])).status_code, 200)
         self.assertEqual(self.post("/search", dict(self.query(), options="invalid")).status_code, 422)
-        self.assertEqual(self.post("/search", self.query(parts="legacy string")).status_code, 422)
+        self.assertEqual(self.post("/search", dict(self.query(), query="")).status_code, 422)
+
+    def test_official_text_only_strings_remain_exact(self):
+        payload = dict(self.payload, messages=[{"role": "user", "content": "red folder 37"}])
+        self.assertEqual(self.post("/add", payload).status_code, 200)
+        result = self.post("/search", self.query(parts="red folder")).json()["data"][0]
+        self.assertEqual(result["content"][1:], [txt("red folder 37")])
 
     def test_retention_deletes_all_derived_records(self):
         self.post("/add", self.payload)
