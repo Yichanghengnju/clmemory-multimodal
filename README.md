@@ -2,7 +2,13 @@
 
 An independent, source-preserving baseline for the **AML Multimodal Memory** open-source track. Version: `multimodal-caption-hybrid-v1.0.1`.
 
-The service writes ordered text/image memories and retrieves original evidence. It does not generate final answers. This is an engineering baseline; no official Smoke, Full, leaderboard score, or competitive advantage is claimed.
+The service writes ordered text/image memories and retrieves original evidence. It does not generate final answers.
+
+## Status
+
+Version `multimodal-caption-hybrid-v1.0.1` (`version_318304ce2167`) passed the official smoke on 2026-10-30 (`teval_cd988976acf8ed86`, 13/13 tasks, 23.08%, both conditions completed) and is the current submission candidate. Full selection is pending final confirmation; no Full has been started.
+
+Open-source Methods identity: embeddings = text-embedding-v4 (1024d), LLM components = GPT-4o-mini, rerank unrestricted. CLIP-based reranking exists only as a separate local research line (default off, not part of this service). Local synthetic panels (2026-10-31) showed no net gain from a caption-skill variant or bounded vision source selection; the zero-LLM fusion core above remains the submission face.
 
 ## Method
 
